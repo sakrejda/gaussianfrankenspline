@@ -1,0 +1,9 @@
+Package: GFS
+Type: Package
+Title: Gaussian Franken-spline
+Version: 1.0
+Date: 2014-09-25
+Author: Krzysztof Sakrejda
+Maintainer: Krzysztof Sakrejda <krzysztof.sakrejda@gmail.com>
+Description: Utility and estimation functions in R and Stan for dealing with splines on large amount of data.
+License: GPL-3

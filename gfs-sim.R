@@ -1,0 +1,96 @@
+
+
+GP <- function(x, mu, eta, rho, sigma, circular=FALSE) {
+	if (circular) {
+		Sigma <- gp_circ_generalized_sq_exp(eta, rho, sigma, x)
+	} else {
+		Sigma <- gp_generalized_sq_exp(eta, rho, sigma, x)
+	}
+	y <- mvrnorm(n=length(x), mu=mu, Sigma=Sigma)
+	return(y)
+}
+
+
+n_points <- 2000
+theta_mu <- 13.55
+mu <- rep(theta_mu, n_points)
+n_steps <- n_points-1
+time <- cumsum(rexp(n=n_points, rate=0.2))
+time <- ymd('2010-01-01') + days(round(time))
+day_of_year <- yday(time)
+angle <- day_to_circle(day_of_year)
+
+n_knots <- 8
+knot_weights_mu <- rep(3,n_knots)
+last_knot_day <- 366 - 366/n_knots
+day_of_knot <- 366/n_knots * (0:(n_knots-1)) #seq(from=0, to=last_knot_day, length.out=n_knots)
+angle_of_knot <- day_to_circle(day_of_knot)
+
+## We construct some arbitrary knot weights to plot the spline first:
+knot_weights <- c(1:(n_knots/2-1),(n_knots/2+1):1)
+
+spline_position <- circular_spline(
+	x=angle, knot_points=angle_of_knot,
+	knot_weights=knot_weights, knot_scale=pi/n_knots)
+
+## Shows where the spline goes based on some knots:
+qplot(day_of_year, spline_position, geom='line', ylim=c(0,1.1*max(spline_position)))
+
+theta_eta_sq <- 10
+theta_rho_sq <- 1
+theta_sigma_sq <- 1
+
+theta_Sigma <- gp_circ_generalized_sq_exp(theta_eta_sq, theta_rho_sq, theta_sigma_sq, angle_of_knot)
+knot_weights <- mvrnorm(n=1, mu=knot_weights_mu, Sigma=theta_Sigma)
+qplot(angle_of_knot, knot_weights)
+
+
+
+spline_position <- circular_spline(
+	x=angle, knot_points=angle_of_knot,
+	knot_weights=knot_weights, knot_scale=pi/n_knots)
+
+## Shows where the spline goes based on some knots:
+qplot(time, spline_position, geom='line', ylim=c(0,1.1*max(spline_position)))
+qplot(day_of_year, spline_position, geom='line') + 
+	geom_point(data=data.frame(x=day_of_knot, y=knot_weights), aes(x=x, y=y/13)) 
+
+
+
+data <- list(
+	n_points = n_points,
+	positions = spline_position + rnorm(length(spline_position),0,.05),
+	day_of_year = day_of_year,
+	n_knots = n_knots 
+)
+
+with(data=data, expr=stan_rdump(list=ls(), file='circular-rw.data'))
+
+
+initial_fun <- function(id) {
+	list(
+		theta_eta_sq = theta_eta_sq * rexp(1),
+		theta_rho_sq = theta_rho_sq * rexp(1),
+		theta_sigma_sq = theta_sigma_sq * rexp(1),
+		theta_mu = 13,
+		knot_weights = knot_weights,
+		positions_sigma = 0.01
+	)
+}
+
+inits <- initial_fun(1)
+
+with(data=inits, expr=stan_rdump(list=ls(), file='circular-rw.inits'))
+
+truth <- list(
+	theta_mu = theta_mu,
+	theta_eta_sq = theta_eta_sq,
+	theta_rho_sq = theta_rho_sq,
+	theta_sigma_sq = theta_sigma_sq,
+	knot_weights = knot_weights
+)
+
+with(data=truth, expr=stan_rdump(list=ls(), file='circular-rw.truth'))
+
+
+
