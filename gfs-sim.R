@@ -1,16 +1,4 @@
 
-
-GP <- function(x, mu, eta, rho, sigma, circular=FALSE) {
-	if (circular) {
-		Sigma <- gp_circ_generalized_sq_exp(eta, rho, sigma, x)
-	} else {
-		Sigma <- gp_generalized_sq_exp(eta, rho, sigma, x)
-	}
-	y <- mvrnorm(n=length(x), mu=mu, Sigma=Sigma)
-	return(y)
-}
-
-
 n_points <- 2000
 theta_mu <- 13.55
 mu <- rep(theta_mu, n_points)
@@ -40,7 +28,7 @@ theta_eta_sq <- 10
 theta_rho_sq <- 1
 theta_sigma_sq <- 1
 
-theta_Sigma <- gp_circ_generalized_sq_exp(theta_eta_sq, theta_rho_sq, theta_sigma_sq, angle_of_knot)
+knot_weights <- GP(1, angle_of_knot, knot_weights_mu, theta_eta_sq, theta_rho_sq, theta_sigma_sq, TRUE)
 knot_weights <- mvrnorm(n=1, mu=knot_weights_mu, Sigma=theta_Sigma)
 qplot(angle_of_knot, knot_weights)
 
