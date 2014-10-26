@@ -62,7 +62,7 @@ functions {
 	vector make_knots(int n_knots, real lower_knot, real upper_knot) {
 		vector[n_knots] knots;
 		real interknot_length;
-		interknot_length <- (upper_knot - lower_knot) / (n_knots-1)
+		interknot_length <- (upper_knot - lower_knot) / (n_knots-1);
 
 		if (n_knots > 1) {
 			for ( i in 1:(n_knots)) {

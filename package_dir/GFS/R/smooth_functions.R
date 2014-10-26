@@ -1,17 +1,4 @@
 
-sq_distance <- function(x, y) {
-  return(pow(x-y,2));
-}
-  
-sq_circ_distance <- function(x, y) {
-    if (x > y) {
-      d <- min(x-y, (2.0*pi-x)+y);
-    } else {
-      d <- min(y-x, (2.0*pi-y)+x);
-    }
-    return(pow(d,2))
-}
-  
 gp_generalized_sq_exp <- function(eta_sq,  rho_sq,  sigma_sq,  x) {
     Sigma <- matrix(data=0, nrow=length(x), ncol=length(x)) 
     for (i in 1:length(x)) {

@@ -1,3 +1,11 @@
+library(ggplot2)
+library(lubridate)
+library(MASS)
+library(rstan)
+
+source("package_dir/GFS/R/basics.R")
+source("package_dir/GFS/R/spline_functions.R")
+source("package_dir/GFS/R/smooth_functions.R")
 
 n_points <- 2000
 theta_mu <- 13.55
@@ -8,7 +16,7 @@ time <- ymd('2010-01-01') + days(round(time))
 day_of_year <- yday(time)
 angle <- day_to_circle(day_of_year)
 
-n_knots <- 8
+n_knots <- 30 
 knot_weights_mu <- rep(3,n_knots)
 last_knot_day <- 366 - 366/n_knots
 day_of_knot <- 366/n_knots * (0:(n_knots-1)) #seq(from=0, to=last_knot_day, length.out=n_knots)
@@ -29,19 +37,18 @@ theta_rho_sq <- 1
 theta_sigma_sq <- 1
 
 knot_weights <- GP(1, angle_of_knot, knot_weights_mu, theta_eta_sq, theta_rho_sq, theta_sigma_sq, TRUE)
-knot_weights <- mvrnorm(n=1, mu=knot_weights_mu, Sigma=theta_Sigma)
 qplot(angle_of_knot, knot_weights)
 
 
 
 spline_position <- circular_spline(
 	x=angle, knot_points=angle_of_knot,
-	knot_weights=knot_weights, knot_scale=pi/n_knots)
+	knot_weights=knot_weights, knot_scale=pi/n_knots, normalize=FALSE)
 
 ## Shows where the spline goes based on some knots:
 qplot(time, spline_position, geom='line', ylim=c(0,1.1*max(spline_position)))
 qplot(day_of_year, spline_position, geom='line') + 
-	geom_point(data=data.frame(x=day_of_knot, y=knot_weights), aes(x=x, y=y/13)) 
+	geom_point(data=data.frame(x=day_of_knot, y=knot_weights), aes(x=x, y=y)) 
 
 
 

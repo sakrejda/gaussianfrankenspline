@@ -1,12 +1,20 @@
 
 ## @knitr generic-radial-spline
 # Generic radial spline:
-radial_spline <- function(x, f, knot_points, knot_weights, knot_scale) {
+radial_spline <- function(x, f, knot_points, knot_weights, knot_scale, normalize=FALSE) {
+	if (normalize) {
+		normalize_height <- f(x=knot_points[1], center=knot_points[1], scale=knot_scale[1])
+	} else {
+		normalize_height <- 1
+	}
   if (length(x) == 1) {
-    knot_contributions <- f(x=x, center=knot_points, scale=knot_scale)*knot_weights
+    knot_contributions <- f(x=x, center=knot_points, scale=knot_scale)*knot_weights/normalize_height
     return(sum(knot_contributions))
   } else {
-    return(sapply(x,radial_spline, f=f, knot_points=knot_points, knot_weights=knot_weights, knot_scale=knot_scale))
+    return(sapply(
+			X=x,
+			FUN=radial_spline, 
+			f=f, knot_points=knot_points, knot_weights=knot_weights, knot_scale=knot_scale,normalize=normalize))
   }
 }
 
@@ -35,15 +43,15 @@ gaussian_spline_integral <- function(knot_points, knot_weights, knot_scale, a, b
 # Circular normal.
 circular_normal_density <- function(x, center, scale) {
   o <- 1/(scale*sqrt(2*pi)) * (
- 		exp(-(x-center-2*pi)^2/(2*scale^2)) +
-    exp(-(x-center     )^2/(2*scale^2)) +
-    exp(-(x-center+2*pi)^2/(2*scale^2))
+ 		exp(-(sq_circ_distance(x,center)^.5-2*pi)^2/(2*scale^2)) +
+    exp(-(sq_circ_distance(x,center)^.5     )^2/(2*scale^2)) +
+    exp(-(sq_circ_distance(x,center)^.5+2*pi)^2/(2*scale^2))
   )
 }
 
-circular_spline <- function(x, knot_points, knot_weights, knot_scale) {
+circular_spline <- function(x, knot_points, knot_weights, knot_scale, normalize=FALSE) {
 	f <- circular_normal_density
-  o <- radial_spline(x=x, f=f, knot_points=knot_points, knot_weights=knot_weights, knot_scale=knot_scale)
+  o <- radial_spline(x=x, f=f, knot_points=knot_points, knot_weights=knot_weights, knot_scale=knot_scale, normalize)
 	return(o)
 }
 	
