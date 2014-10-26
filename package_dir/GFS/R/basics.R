@@ -16,5 +16,36 @@ sq_circ_distance <- function(x, y) {
     return(pow(d,2))
 }
   
+make_knots <- function(n_knots, lower_knot, upper_knot) {
+  knots <- vector(mode='numeric', length=n_knots)
+  interknot_length <- (upper_knot - lower_knot) / (n_knots-1)                                      
 
+  if (n_knots > 1) {
+    for ( i in 1:(n_knots)) {
+      knots[i] <- interknot_length*(i-1);
+    }
+  } else {
+    knots[1] <- (upper_knot - lower_knot) / 2.0;
+  }
+  if (n_knots < 1) {
+    print("'n_knots' < 1 is non-sensical. Assumed 1 knot.");
+  }
+	
+	return(knots)
+}
+
+make_circle_knots <- function(n_knots) {
+	knots <- vector(mode='numeric', length=n_knots)
+  if (n_knots > 1) {
+    for ( i in 1:(n_knots)) {
+      knots[i] <- 2.0*pi/n_knots*(i-1);
+    }
+  } else {
+    knots[1] <- 0;
+  }
+  if (n_knots < 1) {
+    print("'n_knots' < 1 is non-sensical. Assumed 1 knot.");
+  }
+	return(knots)
+}
 
