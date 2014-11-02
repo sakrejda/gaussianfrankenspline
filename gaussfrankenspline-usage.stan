@@ -4,7 +4,7 @@ data {
 	vector[n_points] positions;
 	vector[n_points] day_of_year;
 
-	int n_knots;
+	int n_knots;   // Must be big enough to let you estimates GP parameters.
 }
 
 transformed data {
@@ -36,15 +36,8 @@ model {
 	theta_sigma_sq ~ cauchy(0,5);
 	theta_Sigma <- gp_circ_generalized_sq_exp(theta_eta_sq, theta_rho_sq, theta_sigma_sq, knot_points);
 
-	for (i in 1:n_knots) {
-		mu[i] <- theta_mu;
-	}
-	knot_weights ~ multi_normal(mu, theta_Sigma);
+	knot_weights ~ multi_normal(rep_vector(theta_mu,n_knots), theta_Sigma);
 
-	for ( i in 1:n_points ) {
-		positions_mu[i] <- yday_circular_spline(
-			day_of_year[i], knot_points, knot_weights, knot_scale	);
-	}
-	positions ~ normal(positions_mu, 1);
+	positions ~ normal(yday_circular_spline(day_of_year, knot_points, knot_weights, knot_scale), 1);
 }
 
