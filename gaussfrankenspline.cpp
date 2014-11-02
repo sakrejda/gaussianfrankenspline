@@ -397,10 +397,10 @@ operator()(const T0__& day, std::ostream* pstream__) const {
 template <typename T0__, typename T1__, typename T2__, typename T3__>
 inline
 typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__>::type
-yday_circular_spline(const T0__& yday,
-                         const Eigen::Matrix<T1__, Eigen::Dynamic,1>& knot_points,
-                         const Eigen::Matrix<T2__, Eigen::Dynamic,1>& knot_weights,
-                         const T3__& knot_scale, std::ostream* pstream__) {
+yday_circular_spline_internal(const T0__& yday,
+                                  const Eigen::Matrix<T1__, Eigen::Dynamic,1>& knot_points,
+                                  const Eigen::Matrix<T2__, Eigen::Dynamic,1>& knot_weights,
+                                  const T3__& knot_scale, std::ostream* pstream__) {
     typedef typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__>::type fun_scalar_t__;
     typedef fun_scalar_t__ fun_return_scalar_t__;
     const static bool propto__ = true;
@@ -419,15 +419,15 @@ yday_circular_spline(const T0__& yday,
 }
 
 
-struct yday_circular_spline_functor__ {
+struct yday_circular_spline_internal_functor__ {
 template <typename T0__, typename T1__, typename T2__, typename T3__>
 inline
 typename boost::math::tools::promote_args<T0__, T1__, T2__, T3__>::type
 operator()(const T0__& yday,
-                         const Eigen::Matrix<T1__, Eigen::Dynamic,1>& knot_points,
-                         const Eigen::Matrix<T2__, Eigen::Dynamic,1>& knot_weights,
-                         const T3__& knot_scale, std::ostream* pstream__) const {
-    return yday_circular_spline(yday, knot_points, knot_weights, knot_scale, pstream__);
+                                  const Eigen::Matrix<T1__, Eigen::Dynamic,1>& knot_points,
+                                  const Eigen::Matrix<T2__, Eigen::Dynamic,1>& knot_weights,
+                                  const T3__& knot_scale, std::ostream* pstream__) const {
+    return yday_circular_spline_internal(yday, knot_points, knot_weights, knot_scale, pstream__);
 }
 };
 
@@ -447,7 +447,7 @@ yday_circular_spline(const Eigen::Matrix<T0__, Eigen::Dynamic,1>& yday,
         (void) positions;   // dummy to suppress unused var warning
         stan::math::initialize(positions, std::numeric_limits<double>::quiet_NaN());
         for (int i = 1; i <= num_elements(yday); ++i) {
-            stan::math::assign(get_base1_lhs(positions,i,"positions",1), yday_circular_spline(get_base1(yday,i,"yday",1),knot_points,knot_weights,knot_scale, pstream__));
+            stan::math::assign(get_base1_lhs(positions,i,"positions",1), yday_circular_spline_internal(get_base1(yday,i,"yday",1),knot_points,knot_weights,knot_scale, pstream__));
         }
         return stan::math::promote_scalar<fun_return_scalar_t__>(positions);
     }

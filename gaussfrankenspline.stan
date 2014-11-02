@@ -133,7 +133,7 @@ functions {
 		return angle;
 	}
 
-	real yday_circular_spline(
+	real yday_circular_spline_internal(
 		real yday,
 		vector knot_points, vector knot_weights, real knot_scale
 	) {
@@ -150,7 +150,7 @@ functions {
 	) {
 		vector[num_elements(yday)] positions;
 		for ( i in 1:num_elements(yday)) {
-    	positions[i] <- yday_circular_spline(
+    	positions[i] <- yday_circular_spline_internal(
       	yday[i], knot_points, knot_weights, knot_scale );
 	  }
 		return(positions);
