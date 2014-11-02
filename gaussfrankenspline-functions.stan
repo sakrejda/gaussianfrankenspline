@@ -16,7 +16,7 @@ functions {
 	real circ_distance(real x, real y) {
 		real d;
 		d <- fabs(x-y);
-		return fmin(d, 2*pi-d);
+		return fmin(d, 2*pi()-d);
 	}
 
 	matrix gp_generalized_sq_exp(
@@ -135,8 +135,7 @@ functions {
 
 	real yday_circular_spline(
 		real yday,
-		vector knot_points, vector knot_weights, 
-		real knot_scale
+		vector knot_points, vector knot_weights, real knot_scale
 	) {
 		real theta;
 		real y;
@@ -149,10 +148,10 @@ functions {
 		vector yday,
 		vector knot_points, vector knot_weights, real knot_scale
 	) {
-		vector[day_of_year.size()] positions;
-		for ( i in 1:day_of_year.size()) {
-    	positions_mu[i] <- yday_circular_spline(
-      	day_of_year[i], knot_points, knot_weights, knot_scale );
+		vector[num_elements(yday)] positions;
+		for ( i in 1:num_elements(yday)) {
+    	positions[i] <- yday_circular_spline(
+      	yday[i], knot_points, knot_weights, knot_scale );
 	  }
 		return(positions);
 	}

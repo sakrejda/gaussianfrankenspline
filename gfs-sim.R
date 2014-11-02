@@ -64,9 +64,9 @@ with(data=data, expr=stan_rdump(list=ls(), file='circular-rw.data'))
 
 initial_fun <- function(id) {
 	list(
-		theta_eta_sq = theta_eta_sq * rexp(1),
-		theta_rho_sq = theta_rho_sq * rexp(1),
-		theta_sigma_sq = theta_sigma_sq * rexp(1),
+		theta_eta_sq = theta_eta_sq * runif(1,0.9,1.1),
+		theta_rho_sq = theta_rho_sq * runif(1,0.9,1.1),
+		theta_sigma_sq = theta_sigma_sq * runif(1,0.9,1.1),
 		theta_mu = 13,
 		knot_weights = knot_weights,
 		positions_sigma = 0.01

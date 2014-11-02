@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION="gaussianfrankenspline-test"
+VERSION="gaussianfrankenspline-test-new"
 OUTPUT_ROOT="/home/krzysiek/output_store"
 CHAINS=5
 
