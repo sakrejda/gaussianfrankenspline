@@ -1,4 +1,3 @@
-functions {
 	real sq_distance(real x, real y) {
 		return square(x-y);
 	}
@@ -156,5 +155,4 @@ functions {
 		return(positions);
 	}
 
-}
 
